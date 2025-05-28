@@ -10,7 +10,7 @@
         <ul>
             <a href="/cafeteria_alianza/public/index.php?controller=user&action=index" class="btn btn-info btn-sm">Gestionar Usuarios</a>
             <a href="<?= BASE_URL ?>?controller=product&action=index" class="btn btn-info btn-sm">Gestionar Productos</a>
-            <li>Gestionar Categorías (próximamente)</li>
+            <li><a href="<?= BASE_URL ?>?controller=category&action=index" class="btn btn-info btn-sm">Gestionar Categorías</a></li>
             <li>Ver reportes de ventas (próximamente)</li>
         </ul>
     <?php else: ?>

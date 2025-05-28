@@ -52,8 +52,18 @@ if (session_status() == PHP_SESSION_NONE) {
     </nav>
     <div class="container mt-4">
         <?php
-        if (isset($_SESSION['message'])) {
-            echo '<div class="alert alert-info alert-dismissible fade show" role="alert">' . htmlspecialchars($_SESSION['message']) . '<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>';
-            unset($_SESSION['message']);
-        }
-        ?>
+// Asegurarse de que session_start() esté al principio de cada archivo que use sesiones,
+// o en un archivo que se incluya al principio de todos los scripts.
+// session_start(); // Si no lo tienes en index.php o en un archivo que se incluya siempre.
+
+if (isset($_SESSION['message'])) {
+    $messageType = $_SESSION['message']['type'] ?? 'info'; // Default a 'info' si no está definido
+    $messageText = $_SESSION['message']['text'] ?? 'Mensaje sin texto.'; // Default si no hay texto
+    ?>
+    <div class="alert alert-<?= htmlspecialchars($messageType) ?>" role="alert">
+        <?= htmlspecialchars($messageText) ?>
+    </div>
+    <?php
+    unset($_SESSION['message']); // Limpiar el mensaje después de mostrarlo
+}
+?>

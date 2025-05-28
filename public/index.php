@@ -7,16 +7,17 @@ require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../controllers/UserController.php';
 require_once __DIR__ . '/../controllers/ProductController.php';
 require_once __DIR__ . '/../controllers/CategoryController.php';
-//require_once __DIR__ . '/../controllers/SaleController.php'; // Incluir el controlador de Ventas
+//require_once __DIR__ . '/../controllers/SaleController.php';
 
 $controllerName = $_GET['controller'] ?? 'auth';
 $actionName = $_GET['action'] ?? 'login';
 
-// Lógica de seguridad para redirigir si no está logueado y no es una acción de autenticación
+//Lógica de seguridad para redirigir si no está logueado y no es una acción de autenticación
 if (!isset($_SESSION['user_id']) && !in_array($actionName, ['login', 'register'])) {
     header('Location: ' . BASE_URL . '?controller=auth&action=login');
     exit();
 }
+
 
 $controller = null; // Inicializa la variable controller para evitar errores
 
@@ -86,42 +87,7 @@ switch ($controllerName) {
         break;
 
     case 'product':
-        $controller = new ProductController();
-        switch ($actionName) {
-            case 'index':
-                $controller->index();
-                break;
-            case 'create':
-                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                    $controller->store();
-                } else {
-                    $controller->create(); // Muestra el formulario para crear producto
-                }
-                break;
-            case 'edit':
-                $id = $_GET['id'] ?? null;
-                if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-                    $controller->update($id);
-                } else {
-                    $controller->edit($id); // Muestra el formulario para editar producto
-                }
-                break;
-            case 'delete':
-                $id = $_GET['id'] ?? null;
-                $controller->delete($id);
-                break;
-            // Aquí puedes añadir rutas para los reportes de productos
-            case 'most_stock':
-                $controller->showProductWithMostStock();
-                break;
-            default:
-                header('Location: ' . BASE_URL . '?controller=product&action=index');
-                break;
-        }
-        break;
-
-    case 'category': // Nuevo caso para el controlador de categorías
-        $controller = new CategoryController();
+        $controller = new ProductController(); // Aquí se llama al constructor y checkAdmin()
         switch ($actionName) {
             case 'index':
                 $controller->index();
@@ -143,11 +109,45 @@ switch ($controllerName) {
                 break;
             case 'delete':
                 $id = $_GET['id'] ?? null;
-                // Para eliminar, se recomienda usar POST, así que la lógica ya está dentro del delete()
+                $controller->delete($id);
+                break;
+            case 'most_stock':
+                $controller->showProductWithMostStock();
+                break;
+            default:
+                header('Location: ' . BASE_URL . '?controller=product&action=index');
+                exit();
+                break;
+        }
+        break;
+
+    case 'category':
+        $controller = new CategoryController();
+        switch ($actionName) {
+            case 'index':
+                $controller->index();
+                break;
+            case 'create':
+                $controller->create();
+                break;
+            case 'store':
+                $controller->store();
+                break;
+            case 'edit':
+                $id = $_GET['id'] ?? null;
+                $controller->edit($id);
+                break;
+            case 'update':
+                $id = $_GET['id'] ?? null;
+                $controller->update($id);
+                break;
+            case 'delete':
+                $id = $_GET['id'] ?? null;
                 $controller->delete($id);
                 break;
             default:
                 header('Location: ' . BASE_URL . '?controller=category&action=index');
+                exit();
                 break;
         }
         break;
@@ -176,12 +176,11 @@ switch ($controllerName) {
         break;
 
     default:
-        // Manejo por defecto para controladores no reconocidos
         if (isset($_SESSION['user_id'])) {
-            header('Location: ' . BASE_URL . '?controller=auth&action=home');
+            header('Location: ' . BASE_URL . '?controller=auth&action=home'); // COMENTAR ESTA LÍNEA
         } else {
-            header('Location: ' . BASE_URL . '?controller=auth&action=login');
+            header('Location: ' . BASE_URL . '?controller=auth&action=login'); // COMENTAR ESTA LÍNEA
         }
+        exit();
         break;
 }
-?>
