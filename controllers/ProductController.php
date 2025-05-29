@@ -11,7 +11,7 @@ class ProductController
     {
         $this->productModel = new ProductModel();
         $this->categoryModel = new CategoryModel();
-        $this->checkAdmin(); // Asegúrate de que solo los administradores puedan gestionar productos
+        //$this->checkAdmin(); // Asegúrate de que solo los administradores puedan gestionar productos
     }
 
     private function checkAdmin()
@@ -33,6 +33,7 @@ class ProductController
     // Muestra el formulario para crear un producto
     public function create()
     {
+        $this->checkAdmin(); // Solo el administrador puede crear productos
         $error = '';
         $categories = $this->categoryModel->getAllCategories(); // Obtener todas las categorías
         $product = []; // Para que la vista no dé error si se usa $product en el formulario vacío
@@ -44,6 +45,7 @@ class ProductController
     // Procesa la creación de un producto (desde POST)
     public function store()
     {
+        $this->checkAdmin(); // Solo el administrador puede crear productos
         $error = '';
         $categories = $this->categoryModel->getAllCategories(); // Necesario si hay error y se vuelve a mostrar el formulario
         $product = []; // Para que la vista no dé error si se usa $product
@@ -94,6 +96,7 @@ class ProductController
     // Muestra el formulario para editar un producto
     public function edit($id)
     {
+        $this->checkAdmin(); // Solo el administrador puede crear productos
         $error = '';
         $product = $this->productModel->getProductById($id);
         $categories = $this->categoryModel->getAllCategories(); // Obtener todas las categorías
@@ -111,6 +114,7 @@ class ProductController
     // Procesa la actualización de un producto (desde POST)
     public function update($id)
     {
+        $this->checkAdmin(); // Solo el administrador puede crear productos
         $error = '';
         $product = $this->productModel->getProductById($id); // Se necesita para rellenar la vista si hay error
         $categories = $this->categoryModel->getAllCategories(); // Necesario si hay error y se vuelve a mostrar el formulario
@@ -168,6 +172,7 @@ class ProductController
     // Elimina un producto
     public function delete($id)
     {
+        $this->checkAdmin(); // Solo el administrador puede crear productos
         if ($_SERVER['REQUEST_METHOD'] === 'POST') { // Asegurarse que la eliminación sea via POST
             if ($id) {
                 if ($this->productModel->deleteProduct($id)) { // Usar deleteProduct() del ProductModel
@@ -189,6 +194,6 @@ class ProductController
     public function showProductWithMostStock()
     {
         $mostStockProduct = $this->productModel->getProductWithMostStock();
-        include __DIR__ . '/../views/reports/most_stock_product.php';
+        include __DIR__ . '/../views/sales/most_stock_product.php';
     }
 }

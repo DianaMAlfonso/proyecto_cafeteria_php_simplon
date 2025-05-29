@@ -7,7 +7,7 @@ require_once __DIR__ . '/../controllers/AuthController.php';
 require_once __DIR__ . '/../controllers/UserController.php';
 require_once __DIR__ . '/../controllers/ProductController.php';
 require_once __DIR__ . '/../controllers/CategoryController.php';
-//require_once __DIR__ . '/../controllers/SaleController.php';
+require_once __DIR__ . '/../controllers/SaleController.php';
 
 $controllerName = $_GET['controller'] ?? 'auth';
 $actionName = $_GET['action'] ?? 'login';
@@ -61,7 +61,6 @@ switch ($controllerName) {
         break;
 
     case 'user':
-        // La verificación de administrador se hace dentro del UserController->checkAdmin()
         $controller = new UserController();
         switch ($actionName) {
             case 'index':
@@ -70,18 +69,24 @@ switch ($controllerName) {
             case 'create':
                 $controller->create();
                 break;
+            case 'store': // Añadido para POST de creación de usuario
+                $controller->store();
+                break;
             case 'edit':
-                // Requiere un ID, asumiendo que se pasa via GET: ?controller=user&action=edit&id=X
                 $id = $_GET['id'] ?? null;
                 $controller->edit($id);
                 break;
+            case 'update': // Añadido para POST de actualización de usuario
+                $id = $_GET['id'] ?? null;
+                $controller->update($id);
+                break;
             case 'delete':
-                // Requiere un ID, asumiendo que se pasa via GET o POST: ?controller=user&action=delete&id=X
-                $id = $_GET['id'] ?? null; // Podrías querer solo POST para eliminar
+                $id = $_GET['id'] ?? null;
                 $controller->delete($id);
                 break;
             default:
                 header('Location: ' . BASE_URL . '?controller=user&action=index');
+                exit();
                 break;
         }
         break;
@@ -152,13 +157,16 @@ switch ($controllerName) {
         }
         break;
 
-    case 'sale': // Nuevo caso para el controlador de ventas
+    case 'sale':
         $controller = new SaleController();
         switch ($actionName) {
-            case 'form': // Para mostrar el formulario de venta
+            case 'index': // Nueva acción para listar todas las ventas
+                $controller->index();
+                break;
+            case 'form':
                 $controller->showSaleForm();
                 break;
-            case 'process': // Para procesar la venta
+            case 'process':
                 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $controller->processSaleRequest();
                 } else {
@@ -166,20 +174,21 @@ switch ($controllerName) {
                     echo "Método de solicitud no permitido.";
                 }
                 break;
-            case 'most_sold': // Para mostrar el producto más vendido
+            case 'most_sold':
                 $controller->showMostSoldProduct();
                 break;
             default:
                 header('Location: ' . BASE_URL . '?controller=sale&action=form');
+                exit();
                 break;
         }
         break;
 
     default:
         if (isset($_SESSION['user_id'])) {
-            header('Location: ' . BASE_URL . '?controller=auth&action=home'); // COMENTAR ESTA LÍNEA
+            header('Location: ' . BASE_URL . '?controller=auth&action=home');
         } else {
-            header('Location: ' . BASE_URL . '?controller=auth&action=login'); // COMENTAR ESTA LÍNEA
+            header('Location: ' . BASE_URL . '?controller=auth&action=login');
         }
         exit();
         break;

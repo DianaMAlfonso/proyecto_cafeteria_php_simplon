@@ -12,9 +12,11 @@
     }
     ?>
 
-    <p>
-        <a href="<?= BASE_URL ?>?controller=product&action=create" class="btn btn-success">Crear Nuevo Producto</a>
-    </p>
+    <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+        <p>
+            <a href="<?= BASE_URL ?>?controller=product&action=create" class="btn btn-success mb-3">Crear Nuevo Producto</a>
+        </p>
+    <?php endif; ?>
 
     <table class="table table-bordered">
         <thead>
@@ -42,10 +44,14 @@
                         <td><?= htmlspecialchars($product['category_name'] ?? 'N/A') ?></td> <td><?= htmlspecialchars($product['stock']) ?></td>
                         <td><?= htmlspecialchars($product['creation_date']) ?></td>
                         <td>
-                            <a href="<?= BASE_URL ?>?controller=product&action=edit&id=<?= htmlspecialchars($product['id']) ?>" class="btn btn-warning btn-sm">Editar</a>
-                            <form action="<?= BASE_URL ?>?controller=product&action=delete&id=<?= htmlspecialchars($product['id']) ?>" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
-                                <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
-                            </form>
+                            <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                                <a href="<?= BASE_URL ?>?controller=product&action=edit&id=<?= htmlspecialchars($product['id']) ?>" class="btn btn-warning btn-sm">Editar</a>
+                                <form action="<?= BASE_URL ?>?controller=product&action=delete&id=<?= htmlspecialchars($product['id']) ?>" method="POST" style="display:inline;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar este producto?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                </form>
+                            <?php else: ?>
+                                No hay acciones disponibles
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

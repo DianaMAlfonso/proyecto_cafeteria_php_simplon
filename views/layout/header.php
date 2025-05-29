@@ -5,12 +5,14 @@ if (session_status() == PHP_SESSION_NONE) {
 ?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cafetería Alianza - Gestión de Inventario</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 </head>
+
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
@@ -24,11 +26,6 @@ if (session_status() == PHP_SESSION_NONE) {
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="/cafeteria_alianza/public/index.php?action=home">Inicio</a>
                         </li>
-                        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
-                            <li class="nav-item">
-                                <a class="nav-link" href="/cafeteria_alianza/public/index.php?controller=user&action=index">Gestión de Usuarios</a>
-                            </li>
-                        <?php endif; ?>
                     <?php endif; ?>
                 </ul>
                 <ul class="navbar-nav ms-auto">
@@ -52,18 +49,18 @@ if (session_status() == PHP_SESSION_NONE) {
     </nav>
     <div class="container mt-4">
         <?php
-// Asegurarse de que session_start() esté al principio de cada archivo que use sesiones,
-// o en un archivo que se incluya al principio de todos los scripts.
-// session_start(); // Si no lo tienes en index.php o en un archivo que se incluya siempre.
+        // Asegurarse de que session_start() esté al principio de cada archivo que use sesiones,
+        // o en un archivo que se incluya al principio de todos los scripts.
+        // session_start(); // Si no lo tienes en index.php o en un archivo que se incluya siempre.
 
-if (isset($_SESSION['message'])) {
-    $messageType = $_SESSION['message']['type'] ?? 'info'; // Default a 'info' si no está definido
-    $messageText = $_SESSION['message']['text'] ?? 'Mensaje sin texto.'; // Default si no hay texto
-    ?>
-    <div class="alert alert-<?= htmlspecialchars($messageType) ?>" role="alert">
-        <?= htmlspecialchars($messageText) ?>
-    </div>
-    <?php
-    unset($_SESSION['message']); // Limpiar el mensaje después de mostrarlo
-}
-?>
+        if (isset($_SESSION['message'])) {
+            $messageType = $_SESSION['message']['type'] ?? 'info'; // Default a 'info' si no está definido
+            $messageText = $_SESSION['message']['text'] ?? 'Mensaje sin texto.'; // Default si no hay texto
+        ?>
+            <div class="alert alert-<?= htmlspecialchars($messageType) ?>" role="alert">
+                <?= htmlspecialchars($messageText) ?>
+            </div>
+        <?php
+            unset($_SESSION['message']); // Limpiar el mensaje después de mostrarlo
+        }
+        ?>
