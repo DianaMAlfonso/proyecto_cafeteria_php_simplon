@@ -1,8 +1,7 @@
 <?php
 require_once __DIR__ . '/../models/SaleModel.php';
 require_once __DIR__ . '/../models/ProductModel.php';
-//require_once __DIR__ . '/../views/layout/header.php';
-//require_once __DIR__ . '/../views/layout/footer.php';
+
 
 class SaleController {
     private $saleModel;
@@ -89,6 +88,88 @@ class SaleController {
         } else {
             $_SESSION['message'] = ['type' => 'error', 'text' => 'Método de solicitud no permitido.'];
             header('Location: ' . BASE_URL . '?controller=sale&action=form');
+            exit();
+        }
+    }
+
+    
+    /**
+     * Muestra el formulario para editar una venta. (Solo para Admin) // Nuevo método
+     * @param int $saleId El ID de la venta a editar.
+     */
+    public function edit($saleId) {
+        $this->checkAdmin();
+        $sale = $this->saleModel->getSaleById($saleId);
+        $products = $this->productModel->getAllProducts(); // Para el dropdown de productos
+        
+        if (!$sale) {
+            $_SESSION['message'] = ['type' => 'error', 'text' => 'Venta no encontrada.'];
+            header('Location: ' . BASE_URL . '?controller=sale&action=index');
+            exit();
+        }
+        include __DIR__ . '/../views/sales/create_edit.php'; // Usa una vista unificada
+    }
+
+    /**
+     * Procesa la actualización de una venta. (Solo para Admin) // Nuevo método
+     * @param int $saleId El ID de la venta a actualizar.
+     */
+    public function update($saleId) {
+        $this->checkAdmin();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $newProductId = $_POST['product_id'] ?? null;
+            $newQuantity = $_POST['quantity'] ?? null;
+
+            // Validaciones
+            if (!filter_var($newProductId, FILTER_VALIDATE_INT) || $newProductId <= 0) {
+                $_SESSION['message'] = ['type' => 'error', 'text' => 'ID de producto inválido.'];
+                header('Location: ' . BASE_URL . '?controller=sale&action=edit&id=' . urlencode($saleId));
+                exit();
+            }
+            if (!filter_var($newQuantity, FILTER_VALIDATE_INT) || $newQuantity <= 0) {
+                $_SESSION['message'] = ['type' => 'error', 'text' => 'Cantidad inválida. Debe ser un número entero positivo.'];
+                header('Location: ' . BASE_URL . '?controller=sale&action=edit&id=' . urlencode($saleId));
+                exit();
+            }
+
+            $result = $this->saleModel->updateSale($saleId, $newProductId, $newQuantity);
+
+            if ($result['success']) {
+                $_SESSION['message'] = ['type' => 'success', 'text' => $result['message']];
+                header('Location: ' . BASE_URL . '?controller=sale&action=index');
+                exit();
+            } else {
+                $_SESSION['message'] = ['type' => 'error', 'text' => $result['message']];
+                // Redirigir de nuevo al formulario de edición con el error
+                header('Location: ' . BASE_URL . '?controller=sale&action=edit&id=' . urlencode($saleId));
+                exit();
+            }
+        } else {
+            $_SESSION['message'] = ['type' => 'error', 'text' => 'Método no permitido para actualizar.'];
+            header('Location: ' . BASE_URL . '?controller=sale&action=index');
+            exit();
+        }
+    }
+
+    /**
+     * Elimina una venta. (Solo para Admin) // Nuevo método
+     * @param int $saleId El ID de la venta a eliminar.
+     */
+    public function delete($saleId) {
+        $this->checkAdmin();
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $result = $this->saleModel->deleteSale($saleId);
+
+            if ($result['success']) {
+                $_SESSION['message'] = ['type' => 'success', 'text' => $result['message']];
+            } else {
+                $_SESSION['message'] = ['type' => 'error', 'text' => $result['message']];
+            }
+            header('Location: ' . BASE_URL . '?controller=sale&action=index');
+            exit();
+        } else {
+            $_SESSION['message'] = ['type' => 'error', 'text' => 'Método no permitido para eliminar.'];
+            header('Location: ' . BASE_URL . '?controller=sale&action=index');
             exit();
         }
     }

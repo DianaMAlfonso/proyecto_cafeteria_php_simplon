@@ -32,6 +32,9 @@
                 <th>Vendedor</th>
                 <th>Email Vendedor</th>
                 <th>Fecha Venta</th>
+                <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                    <th>Acciones</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
@@ -47,6 +50,14 @@
                         <td><?= htmlspecialchars($sale['seller_name'] ?? 'N/A') ?></td>
                         <td><?= htmlspecialchars($sale['seller_email'] ?? 'N/A') ?></td>
                         <td><?= htmlspecialchars($sale['sale_date']) ?></td>
+                        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                            <td>
+                                <a href="<?= BASE_URL ?>?controller=sale&action=edit&id=<?= htmlspecialchars($sale['sale_id']) ?>" class="btn btn-warning btn-sm">Editar</a>
+                                <form action="<?= BASE_URL ?>?controller=sale&action=delete&id=<?= htmlspecialchars($sale['sale_id']) ?>" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Estás seguro de que quieres eliminar esta venta? Esto devolverá el stock al producto.');">
+                                    <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                                </form>
+                            </td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             <?php else: ?>
